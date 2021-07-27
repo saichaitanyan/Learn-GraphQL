@@ -2,7 +2,9 @@
     "users": [
         {
             "id": 1,
-            "name": "Sai Chaitanya"
+            "name": "Sai Chaitanya",
+            "gender": "Male",
+            "age": 26
         }
     ],
     "posts": [

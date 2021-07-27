@@ -21,7 +21,9 @@ const UserType = new GraphQLObjectType({
     description: 'All about User',
     fields: () => ({
         id: { type: GraphQLNonNull(GraphQLInt) },
-        name: { type: GraphQLNonNull(GraphQLString) }
+        name: { type: GraphQLNonNull(GraphQLString) },
+        gender: { type: GraphQLNonNull(GraphQLString) },
+        age: { type: GraphQLNonNull(GraphQLInt) }
     })
 })
 
@@ -42,7 +44,7 @@ const PostType = new GraphQLObjectType({
 
 const CommentType = new GraphQLObjectType({
     name: 'Comment',
-    description: 'All about comments',
+    description: 'All about Comment',
     fields: () => ({
         id: { type: GraphQLNonNull(GraphQLInt) },
         name: { type: GraphQLNonNull(GraphQLString) },
@@ -55,20 +57,45 @@ const CommentType = new GraphQLObjectType({
         }
     })
 })
+
 // RootQueryType
 const RootQueryType = new GraphQLObjectType({
     name: 'Query',
     description: 'Root Query',
     fields: () => ({
+        post: {
+            type: PostType,
+            description: 'Get a that particular post by id',
+            args: {
+                id: { type: GraphQLInt }
+            },
+            resolve: (parent, args) => posts.find(post => post.id === args.id)
+        },
         posts: {
             type: new GraphQLList(PostType),
             description: 'List of posts',
             resolve: () => posts
         },
+        user: {
+            type: UserType,
+            description: 'Get that particular user by id',
+            args: {
+                id: { type: GraphQLInt }
+            },
+            resolve: (parent, args) => users.find(user => user.id === args.id)
+        },
         users: {
             type: new GraphQLList(UserType),
             description: 'List of users',
             resolve: () => users
+        },
+        comment: {
+            type: CommentType,
+            description: 'Get that particular comment by id',
+            args: {
+                id: { type: GraphQLInt }
+            },
+            resolve: (parent, args) => comments.find(comment => comment.id === args.id)
         },
         comments: {
             type: new GraphQLList(CommentType),
@@ -78,15 +105,16 @@ const RootQueryType = new GraphQLObjectType({
     })
 });
 
-// schema
+// Schema
 const schema = new GraphQLSchema({
     query: RootQueryType
 })
-// server listens at 3000 port
+
+// endpoint
 app.use('/graphql', expressGraphQL({
     schema: schema,
     graphiql: true
 })
 )
-
+// Start server and listens at 3000 port
 app.listen(3000, () => console.log('Server Running 🚀'))
